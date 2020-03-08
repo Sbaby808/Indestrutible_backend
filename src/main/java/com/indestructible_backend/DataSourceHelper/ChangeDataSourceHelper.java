@@ -1,6 +1,7 @@
 package com.indestructible_backend.DataSourceHelper;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.indestructible_backend.domain.DBInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,20 @@ public final class ChangeDataSourceHelper {
             dynamicDataSource.setUrl("jdbc:mysql://" + dbInfo.getDbIp() + ":" + dbInfo.getDbPort() + "/mysql" + "?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8");
             dynamicDataSource.setUsername(dbInfo.getDbUser());
             dynamicDataSource.setPassword(dbInfo.getDbPasswd());
+            dynamicDataSource.setRemoveAbandoned(true);
+            dynamicDataSource.setRemoveAbandonedTimeout(600);
+            dynamicDataSource.setLogAbandoned(true);
+            dynamicDataSource.setBreakAfterAcquireFailure(true);
+            dynamicDataSource.setTimeBetweenConnectErrorMillis(60);
+            dynamicDataSource.setConnectionErrorRetryAttempts(10);
+            dynamicDataSource.setMaxWait(3000);
 
             Map<Object, Object> dataSourceMap = DynamicDataSource.getInstance().getDataSourceMap();
             dataSourceMap.put("dynamic-slave", dynamicDataSource);
             DynamicDataSource.getInstance().setTargetDataSources(dataSourceMap);
             // 切换数据源
             DataSourceContextHolder.setDBType("dynamic-slave");
+            System.out.println(dynamicDataSource.getConnection());
         } catch (Exception e) {
             LOGGER.error("change DataSource failure", e);
             throw new RuntimeException(e);

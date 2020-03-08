@@ -2,6 +2,7 @@ package com.indestructible_backend.controller;
 
 import com.indestructible_backend.DataSourceHelper.ChangeDataSourceHelper;
 import com.indestructible_backend.domain.DBInfo;
+import com.indestructible_backend.domain.Response;
 import com.indestructible_backend.mapper.DatabaseStructureDao;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +26,18 @@ public class TestController {
     }
 
     @RequestMapping(value = "/get_database_list", method = RequestMethod.POST)
-    public List<String> databaseList(@RequestBody DBInfo dbInfo) {
-        if(ChangeDataSourceHelper.changeDataSource(dbInfo)) {
-            return databaseStructureDao.databaseList();
-        } else {
-            return null;
+    public Response databaseList(@RequestBody DBInfo dbInfo) {
+        try {
+            if(ChangeDataSourceHelper.changeDataSource(dbInfo)) {
+                List<String> lst = databaseStructureDao.databaseList();
+                return new Response().success(lst);
+            } else {
+                return new Response().failure("get connection failed!");
+            }
+        } catch (Exception e) {
+            return new Response().failure(e.getCause().getCause().getMessage());
         }
+
     }
 
 }
