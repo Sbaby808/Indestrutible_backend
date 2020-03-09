@@ -30,16 +30,21 @@ public class DataSourceConfig {
     @Value("${spring.datasource.default.password}")
     private String defaultDBPassword;
     @Value("${spring.datasource.default.driver-class-name}")
-    private String defaultDBDreiverName;
-
-    @Value("${spring.datasource.master.url}")
-    private String masterDBUrl;
-    @Value("${spring.datasource.master.username}")
-    private String masterDBUser;
-    @Value("${spring.datasource.master.password}")
-    private String masterDBPassword;
-    @Value("${spring.datasource.default.driver-class-name}")
-    private String masterDBDreiverName;
+    private String defaultDBDriverName;
+    @Value("${spring.datasource.default.remove-abandoned}")
+    private boolean defaultRemoveAbandoned;
+    @Value("${spring.datasource.default.remove-abandoned-timeout}")
+    private int defaultRemoveAbandonedTimeout;
+    @Value("${spring.datasource.default.log-abandoned}")
+    private boolean defaultLogAbandoned;
+    @Value("${spring.datasource.default.break-after-acquire-failure}")
+    private boolean defaultBreakAfterAcquireFailure;
+    @Value("${spring.datasource.default.time-between-connect-error-millis}")
+    private long defaultTimeBetweenConnectErrorMillis;
+    @Value("${spring.datasource.default.connection-error-retry-attempts}")
+    private int defaultConnectionErrorRetryAttempts;
+    @Value("${spring.datasource.default.max-wait}")
+    private int defaultMaxWait;
 
     @Bean
     public DynamicDataSource dynamicDataSource() {
@@ -49,17 +54,17 @@ public class DataSourceConfig {
         defaultDataSource.setUrl(defaultDBUrl);
         defaultDataSource.setUsername(defaultDBUser);
         defaultDataSource.setPassword(defaultDBPassword);
-        defaultDataSource.setDriverClassName(defaultDBDreiverName);
-
-        DruidDataSource masterDataSource = new DruidDataSource();
-        masterDataSource.setDriverClassName(masterDBDreiverName);
-        masterDataSource.setUrl(masterDBUrl);
-        masterDataSource.setUsername(masterDBUser);
-        masterDataSource.setPassword(masterDBPassword);
+        defaultDataSource.setDriverClassName(defaultDBDriverName);
+        defaultDataSource.setRemoveAbandoned(defaultRemoveAbandoned);
+        defaultDataSource.setRemoveAbandonedTimeout(defaultRemoveAbandonedTimeout);
+        defaultDataSource.setLogAbandoned(defaultLogAbandoned);
+        defaultDataSource.setBreakAfterAcquireFailure(defaultBreakAfterAcquireFailure);
+        defaultDataSource.setTimeBetweenConnectErrorMillis(defaultTimeBetweenConnectErrorMillis);
+        defaultDataSource.setConnectionErrorRetryAttempts(defaultConnectionErrorRetryAttempts);
+        defaultDataSource.setMaxWait(defaultTimeBetweenConnectErrorMillis);
 
         Map<Object,Object> map = new HashMap<>();
         map.put("default", defaultDataSource);
-        map.put("master", masterDataSource);
         dynamicDataSource.setTargetDataSources(map);
         dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
 
