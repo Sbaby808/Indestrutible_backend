@@ -1,11 +1,9 @@
 package com.indestructible_backend.DataSourceHelper;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.indestructible_backend.domain.DBInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 
 /**
@@ -29,7 +27,7 @@ public final class ChangeDataSourceHelper {
             // 创建数据源
             DruidDataSource dynamicDataSource = new DruidDataSource();
             dynamicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-            dynamicDataSource.setUrl("jdbc:mysql://" + dbInfo.getDbIp() + ":" + dbInfo.getDbPort() + "/mysql" + "?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8");
+            dynamicDataSource.setUrl("jdbc:mysql://" + dbInfo.getDbIp() + ":" + dbInfo.getDbPort() + "/information_schema" + "?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8");
             dynamicDataSource.setUsername(dbInfo.getDbUser());
             dynamicDataSource.setPassword(dbInfo.getDbPasswd());
             dynamicDataSource.setRemoveAbandoned(true);
@@ -45,12 +43,12 @@ public final class ChangeDataSourceHelper {
             DynamicDataSource.getInstance().setTargetDataSources(dataSourceMap);
             // 切换数据源
             DataSourceContextHolder.setDBType("dynamic-slave");
-            System.out.println(dynamicDataSource.getConnection());
+            // 这行代码很重要，如果不加不会立即建立数据库连接，也就无法检测连接是否正确
+            dynamicDataSource.getConnection();
         } catch (Exception e) {
             LOGGER.error("change DataSource failure", e);
             throw new RuntimeException(e);
         }
         return true;
     }
-
 }

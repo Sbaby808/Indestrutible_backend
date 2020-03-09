@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Sbaby
@@ -12,6 +13,9 @@ import java.util.List;
  */
 @Mapper
 public interface DatabaseStructureDao {
+
+    @Select("select TABLE_NAME, TABLE_SCHEMA from TABLES")
+    List<Map> databaseAndTableList();
 
     @Select("show databases")
     List<String> databaseList();
