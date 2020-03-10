@@ -4,7 +4,9 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.indestructible_backend.domain.DBInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 切换数据源助手类
@@ -22,7 +24,7 @@ public final class ChangeDataSourceHelper {
      * @param dbInfo
      * @return
      */
-    public static boolean changeDataSource(DBInfo dbInfo) {
+    public static boolean changeDataSource(DBInfo dbInfo, String dataSource) {
         try {
             // 创建数据源
             DruidDataSource dynamicDataSource = new DruidDataSource();
@@ -30,7 +32,7 @@ public final class ChangeDataSourceHelper {
             dynamicDataSource.setUrl("jdbc:mysql://" + dbInfo.getDbIp() + ":" + dbInfo.getDbPort() + "/information_schema" + "?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8");
             dynamicDataSource.setUsername(dbInfo.getDbUser());
             dynamicDataSource.setPassword(dbInfo.getDbPasswd());
-            dynamicDataSource.setRemoveAbandoned(true);
+            dynamicDataSource.setRemoveAbandoned(false);
             dynamicDataSource.setRemoveAbandonedTimeout(600);
             dynamicDataSource.setLogAbandoned(true);
             dynamicDataSource.setBreakAfterAcquireFailure(true);
@@ -38,11 +40,12 @@ public final class ChangeDataSourceHelper {
             dynamicDataSource.setConnectionErrorRetryAttempts(10);
             dynamicDataSource.setMaxWait(3000);
 
+            String dataSourceName = UUID.randomUUID().toString();
             Map<Object, Object> dataSourceMap = DynamicDataSource.getInstance().getDataSourceMap();
-            dataSourceMap.put("dynamic-slave", dynamicDataSource);
+            dataSourceMap.put(dataSourceName, dynamicDataSource);
             DynamicDataSource.getInstance().setTargetDataSources(dataSourceMap);
             // 切换数据源
-            DataSourceContextHolder.setDBType("dynamic-slave");
+            DataSourceContextHolder.setDataSource(dataSourceName);
             // 这行代码很重要，如果不加不会立即建立数据库连接，也就无法检测连接是否正确
             dynamicDataSource.getConnection();
         } catch (Exception e) {

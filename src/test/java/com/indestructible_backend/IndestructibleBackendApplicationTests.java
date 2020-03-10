@@ -8,10 +8,8 @@ import java.io.IOException;
 @SpringBootTest
 class IndestructibleBackendApplicationTests {
 
-
     @Test
     void contextLoads() throws IOException {
-
     }
 
 }

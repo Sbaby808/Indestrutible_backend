@@ -2,6 +2,10 @@ package com.indestructible_backend.service;
 
 import com.indestructible_backend.domain.DBInfo;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 初始化连接Service
  *
@@ -16,6 +20,14 @@ public interface InitService {
      * @param dbInfo
      * @return
      */
-    public boolean testConnection(DBInfo dbInfo) throws Exception;
+    public boolean testConnection(DBInfo dbInfo, String dataSource) throws Exception;
+
+    /**
+     * 获取数据库列表
+     * @return
+     */
+    public Map<String, List<String>> getDatabaseAndTables();
+
+
 
 }

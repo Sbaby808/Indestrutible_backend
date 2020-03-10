@@ -1,5 +1,6 @@
 package com.indestructible_backend.DataSourceHelper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
     //必须实现其方法
     protected Object determineCurrentLookupKey() {
-        return DataSourceContextHolder.getDBType();
+        return DataSourceContextHolder.getDataSource();
     }
 
 }

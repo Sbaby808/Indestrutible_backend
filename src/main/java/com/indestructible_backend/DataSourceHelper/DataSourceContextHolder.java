@@ -2,22 +2,22 @@ package com.indestructible_backend.DataSourceHelper;
 
 /**
  * @Author Sbaby
- * @Date 2020/03/08 15:32
+ * @Date 2020/03/11 0:06
  * @Version 1.0
  */
 public class DataSourceContextHolder {
 
     private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
 
-    public static synchronized void setDBType(String dbType){
-        contextHolder.set(dbType);
+    public static synchronized void setDataSource(String dataSource){
+        contextHolder.set(dataSource);
     }
 
-    public static String getDBType(){
+        public static String getDataSource(){
         return contextHolder.get();
     }
 
-    public static void clearDBType(){
+    public static void clearDataSource(){
         contextHolder.remove();
     }
 
