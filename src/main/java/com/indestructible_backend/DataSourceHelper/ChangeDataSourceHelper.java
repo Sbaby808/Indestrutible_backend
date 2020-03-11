@@ -24,7 +24,7 @@ public final class ChangeDataSourceHelper {
      * @param dbInfo
      * @return
      */
-    public static boolean changeDataSource(DBInfo dbInfo, String dataSource) {
+    public static boolean changeDataSource(DBInfo dbInfo, String dataSource) throws Exception {
         try {
             // 创建数据源
             DruidDataSource dynamicDataSource = new DruidDataSource();
