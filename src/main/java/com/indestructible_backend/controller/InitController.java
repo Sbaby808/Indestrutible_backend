@@ -2,6 +2,7 @@ package com.indestructible_backend.controller;
 
 import com.indestructible_backend.DataSourceHelper.DataSourceContextHolder;
 import com.indestructible_backend.domain.DBInfo;
+import com.indestructible_backend.domain.DatabaseAndTables;
 import com.indestructible_backend.domain.Response;
 import com.indestructible_backend.service.InitService;
 import com.indestructible_backend.utils.DataSourceUtil;
@@ -51,7 +52,7 @@ public class InitController {
         } else {
             DataSourceContextHolder.setDataSource(dataSource);
             try {
-                Map<String, List<String>> result = initService.getDatabaseAndTables();
+                DatabaseAndTables result = initService.getDatabaseAndTables();
                 return new Response().success(result);
             } catch (Exception e) {
                 LOGGER.error("get databases and tables failed!", e);

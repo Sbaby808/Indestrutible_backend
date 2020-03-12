@@ -1,8 +1,8 @@
 package com.indestructible_backend.service.impl;
 
 import com.indestructible_backend.DataSourceHelper.ChangeDataSourceHelper;
-import com.indestructible_backend.DataSourceHelper.DataSourceContextHolder;
 import com.indestructible_backend.domain.DBInfo;
+import com.indestructible_backend.domain.DatabaseAndTables;
 import com.indestructible_backend.mapper.DatabaseStructureDao;
 import com.indestructible_backend.service.InitService;
 import org.springframework.stereotype.Service;
@@ -39,19 +39,13 @@ public class InitServiceImpl implements InitService {
     }
 
     @Override
-    public Map<String, List<String>> getDatabaseAndTables() {
+    public DatabaseAndTables getDatabaseAndTables() {
         List<Map> lst = databaseStructureDao.databaseAndTableList();
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        DatabaseAndTables result = new DatabaseAndTables();
         for (Map map : lst) {
             String databaseName = map.get("TABLE_SCHEMA") + "";
             String tableName = map.get("TABLE_NAME") + "";
-            if(!result.containsKey(databaseName)) {
-                List<String> tables = new ArrayList<String>();
-                tables.add(tableName);
-                result.put(databaseName, tables);
-            } else {
-                result.get(databaseName).add(tableName);
-            }
+            result.addItem(databaseName, tableName);
         }
         return result;
     }
