@@ -3,14 +3,12 @@ package com.indestructible_backend.service.impl;
 import com.indestructible_backend.DataSourceHelper.ChangeDataSourceHelper;
 import com.indestructible_backend.domain.DBInfo;
 import com.indestructible_backend.domain.DatabaseAndTables;
-import com.indestructible_backend.mapper.DatabaseStructureDao;
+import com.indestructible_backend.mapper.InitDao;
 import com.indestructible_backend.service.InitService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +24,12 @@ import java.util.Map;
 public class InitServiceImpl implements InitService {
 
     @Resource
-    DatabaseStructureDao databaseStructureDao;
+    InitDao initDao;
 
     @Override
     public boolean testConnection(DBInfo dbInfo, String dataSource) throws Exception {
         if(ChangeDataSourceHelper.changeDataSource(dbInfo, dataSource)) {
-            List<String> lst = databaseStructureDao.databaseList();
+            List<String> lst = initDao.databaseList();
             return lst.size() > 0;
         } else {
             return false;
@@ -40,7 +38,7 @@ public class InitServiceImpl implements InitService {
 
     @Override
     public DatabaseAndTables getDatabaseAndTables() {
-        List<Map> lst = databaseStructureDao.databaseAndTableList();
+        List<Map> lst = initDao.databaseAndTableList();
         DatabaseAndTables result = new DatabaseAndTables();
         for (Map map : lst) {
             String databaseName = map.get("TABLE_SCHEMA") + "";

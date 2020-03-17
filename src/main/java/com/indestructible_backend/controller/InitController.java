@@ -9,14 +9,7 @@ import com.indestructible_backend.utils.DataSourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Sbaby
@@ -24,6 +17,7 @@ import java.util.Map;
  * @Version 1.0
  */
 @RestController
+@RequestMapping("/init")
 public class InitController {
 
     private static Logger LOGGER = LoggerFactory.getLogger(InitController.class);

@@ -1,5 +1,6 @@
 package com.indestructible_backend.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
+@AllArgsConstructor
 public class DBInfo {
 
     private String dbIp;
@@ -15,10 +17,4 @@ public class DBInfo {
     private String dbUser;
     private String dbPasswd;
 
-    public DBInfo(String dbIp, int dbPort, String dbUser, String dbPasswd) {
-        this.dbIp = dbIp;
-        this.dbPort = dbPort;
-        this.dbUser = dbUser;
-        this.dbPasswd = dbPasswd;
-    }
 }
