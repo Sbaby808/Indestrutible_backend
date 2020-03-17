@@ -1,5 +1,6 @@
 package com.indestructible_backend.service.impl;
 
+import com.indestructible_backend.domain.NewDbInfo;
 import com.indestructible_backend.mapper.DatabaseDao;
 import com.indestructible_backend.service.DatabaseService;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,13 @@ public class DatabaseServiceImpl implements DatabaseService {
     DatabaseDao databaseDao;
 
     @Override
-    public int newDatabase(String dbName, String charset, String collate, String dataSource) {
-        if(charset == null || " ".equals(charset)) {
-            return databaseDao.createNewDatabaseC(dbName);
-        } else if(collate == null || " ".equals(collate)) {
-            return databaseDao.createNewDatabaseB(dbName, charset);
+    public int newDatabase(NewDbInfo newDbInfo) {
+        if(" ".equals(newDbInfo.getCharset())) {
+            return databaseDao.createNewDatabaseC(newDbInfo.getDbName());
+        } else if(" ".equals(newDbInfo.getCollate())) {
+            return databaseDao.createNewDatabaseB(newDbInfo.getDbName(), newDbInfo.getCharset());
         } else {
-            return databaseDao.createNewDatabaseA(dbName, charset, collate);
+            return databaseDao.createNewDatabaseA(newDbInfo.getDbName(), newDbInfo.getCharset(), newDbInfo.getCollate());
         }
     }
 }

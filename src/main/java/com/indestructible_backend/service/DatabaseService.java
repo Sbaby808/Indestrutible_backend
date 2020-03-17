@@ -1,5 +1,7 @@
 package com.indestructible_backend.service;
 
+import com.indestructible_backend.domain.NewDbInfo;
+
 /**
  * @Author Sbaby
  * @Date 2020/03/18 1:04
@@ -12,6 +14,6 @@ public interface DatabaseService {
      * @param dataSource
      * @return
      */
-    public int newDatabase(String dbName, String charset, String collate, String dataSource);
+    public int newDatabase(NewDbInfo newDbInfo);
 
 }
