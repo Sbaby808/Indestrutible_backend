@@ -14,7 +14,13 @@ import java.util.Map;
 @Mapper
 public interface InitDao {
 
-    @Select("select TABLE_NAME, TABLE_SCHEMA from TABLES where TABLE_TYPE = 'BASE TABLE' or TABLE_TYPE = 'SYSTEM VIEW'")
+    @Select("select a.SCHEMA_NAME,b.TABLE_NAME" +
+            " from information_schema.SCHEMATA a " +
+            "left join " +
+            "(select * from information_schema.TABLES" +
+            " where TABLE_TYPE = 'BASE TABLE' " +
+            "or TABLE_TYPE = 'SYSTEM VIEW') b" +
+            " on a.SCHEMA_NAME = b.TABLE_SCHEMA;")
     List<Map> databaseAndTableList();
 
     @Select("show databases")

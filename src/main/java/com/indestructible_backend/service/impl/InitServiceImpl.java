@@ -41,8 +41,8 @@ public class InitServiceImpl implements InitService {
         List<Map> lst = initDao.databaseAndTableList();
         DatabaseAndTables result = new DatabaseAndTables();
         for (Map map : lst) {
-            String databaseName = map.get("TABLE_SCHEMA") + "";
-            String tableName = map.get("TABLE_NAME") + "";
+            String databaseName = map.get("SCHEMA_NAME") + "";
+            String tableName = map.get("TABLE_NAME") == null ? null : map.get("TABLE_NAME") + "";
             result.addItem(databaseName, tableName);
         }
         return result;
