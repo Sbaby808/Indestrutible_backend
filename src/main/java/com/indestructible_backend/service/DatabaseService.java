@@ -11,9 +11,12 @@ public interface DatabaseService {
 
     /**
      * 创建数据库
-     * @param dataSource
-     * @return
      */
     public int newDatabase(NewDbInfo newDbInfo);
+
+    /**
+     * 删除数据库
+     */
+    public void dropDatabase(String dbName);
 
 }

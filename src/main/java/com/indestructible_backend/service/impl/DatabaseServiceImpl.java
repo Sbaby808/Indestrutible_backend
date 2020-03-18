@@ -30,4 +30,9 @@ public class DatabaseServiceImpl implements DatabaseService {
             return databaseDao.createNewDatabaseA(newDbInfo.getDbName(), newDbInfo.getCharset(), newDbInfo.getCollate());
         }
     }
+
+    @Override
+    public void dropDatabase(String dbName) {
+        databaseDao.dropDatabase(dbName);
+    }
 }

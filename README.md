@@ -8,6 +8,13 @@ A MySQL management system backend.
 4. 在每次请求中将 dataSource 值放入 DataSourceContextHolder 中，即本地线程中，供 DynamicDataSource 的 determineCurrentLookupKey()方法调用，
 实现数据源切换。
 
+## 急需解决的问题：
+1. 无法删除非默认数据源中的数据库。
+```sql
+Can't drop database 'tttt'; database doesn't exist
+```
+
+
 ## 遗留问题：
 1. 需要事先定义好正确的数据源信息（第一次发送请求会触发建立默认连接）
 

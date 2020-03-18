@@ -8,10 +8,7 @@ import com.indestructible_backend.utils.DataSourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Sbaby
@@ -35,9 +32,24 @@ public class DatabaseController {
             DataSourceContextHolder.setDataSource(newDbInfo.getDataSource());
             try {
                 int result = databaseService.newDatabase(newDbInfo);
-                return new Response().success().success(result);
+                return new Response().success(result);
             } catch (Exception e) {
                 LOGGER.error("create database failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
+    @DeleteMapping("/del_db")
+    public Response dropDatabase(String dbName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            try {
+                databaseService.dropDatabase(dbName);
+                return new Response().success();
+            } catch (Exception e) {
+                LOGGER.error("drop database failed!", e);
                 return new Response().failure(e.getCause().getMessage());
             }
         }

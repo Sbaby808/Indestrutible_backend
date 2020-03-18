@@ -1,5 +1,6 @@
 package com.indestructible_backend.mapper;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
@@ -12,14 +13,17 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface DatabaseDao {
 
-    @Update("CREATE DATABASE ${dbName} CHARACTER SET #{charset} COLLATE #{collate}")
+    @Update("CREATE DATABASE `${dbName}` CHARACTER SET #{charset} COLLATE #{collate}")
     int createNewDatabaseA(@Param("dbName") String dbName, @Param("charset") String charset, @Param("collate") String collate);
 
-    @Update("CREATE DATABASE ${dbName} CHARACTER SET #{charset}")
+    @Update("CREATE DATABASE `${dbName}` CHARACTER SET #{charset}")
     int createNewDatabaseB(@Param("dbName") String dbName, @Param("charset") String charset);
 
-    @Update("CREATE DATABASE ${dbName}")
+    @Update("CREATE DATABASE `${dbName}`")
     int createNewDatabaseC(@Param("dbName") String dbName);
+
+    @Update("DROP DATABASE `${dbName}`")
+    void dropDatabase(@Param("dbName") String dbName);
 
 
 }
