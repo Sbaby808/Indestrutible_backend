@@ -2,10 +2,10 @@
 A MySQL management system backend.
 
 ## 动态数据源处理
-1. 发送测试连接请求时，将数据源信息放入  DynamicDataSource 的 DataSourceMap 中，键为 UUID 生成。
+1. 发送测试连接请求时，将数据源信息放入  [DynamicDataSource](https://github.com/Sbaby808/Indestrutible_backend/blob/master/src/main/java/com/indestructible_backend/DataSourceHelper/DynamicDataSource.java) 的 DataSourceMap 中，键为 UUID 生成。
 2. 在 Response 中添加此值返回。
 3. 前端每次请求需附带初次建立连接时响应中的 dataSource 值，并在 Controller 中检查 dataSource 参数是否有效。
-4. 在每次请求中将 dataSource 值放入 DataSourceContextHolder 中，即本地线程中，供 DynamicDataSource 的 determineCurrentLookupKey()方法调用，
+4. 在每次请求中将 dataSource 值放入 [DataSourceContextHolder](https://github.com/Sbaby808/Indestrutible_backend/blob/master/src/main/java/com/indestructible_backend/DataSourceHelper/DataSourceContextHolder.java) 中，即本地线程中，供 [DynamicDataSource](https://github.com/Sbaby808/Indestrutible_backend/blob/master/src/main/java/com/indestructible_backend/DataSourceHelper/DynamicDataSource.java) 的 determineCurrentLookupKey()方法调用，
 实现数据源切换。
 
 ## 遗留问题：
