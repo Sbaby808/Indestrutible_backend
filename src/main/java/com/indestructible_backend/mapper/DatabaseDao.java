@@ -25,5 +25,8 @@ public interface DatabaseDao {
     @Update("DROP DATABASE `${dbName}`")
     void dropDatabase(@Param("dbName") String dbName);
 
+    @Update("DROP TABLE ${dbName}.${tbName}")
+    void dropTable(@Param("dbName") String dbName, @Param("tbName") String tbName);
+
 
 }

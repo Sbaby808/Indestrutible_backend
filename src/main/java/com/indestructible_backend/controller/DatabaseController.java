@@ -56,4 +56,20 @@ public class DatabaseController {
         }
     }
 
+    @DeleteMapping("/del_tb")
+    public Response dropTable(String dbName, String tbName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                databaseService.dropTable(dbName, tbName);
+                return new Response().success();
+            } catch (Exception e) {
+                LOGGER.error("drop table failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
 }

@@ -19,4 +19,9 @@ public interface DatabaseService {
      */
     public void dropDatabase(String dbName);
 
+    /**
+     * 删除数据表
+     */
+    public void dropTable(String dbName, String tbName);
+
 }

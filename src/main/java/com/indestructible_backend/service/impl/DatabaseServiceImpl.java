@@ -35,4 +35,9 @@ public class DatabaseServiceImpl implements DatabaseService {
     public void dropDatabase(String dbName) {
         databaseDao.dropDatabase(dbName);
     }
+
+    @Override
+    public void dropTable(String dbName, String tbName) {
+        databaseDao.dropTable(dbName, tbName);
+    }
 }
