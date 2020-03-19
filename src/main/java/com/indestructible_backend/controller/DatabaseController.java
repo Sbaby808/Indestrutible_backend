@@ -45,6 +45,7 @@ public class DatabaseController {
         if(!DataSourceUtil.checkDataSource(dataSource)) {
             return new Response().failure("error dataSource!");
         } else {
+            DataSourceContextHolder.setDataSource(dataSource);
             try {
                 databaseService.dropDatabase(dbName);
                 return new Response().success();

@@ -9,10 +9,7 @@ A MySQL management system backend.
 实现数据源切换。
 
 ## 急需解决的问题：
-1. 无法删除非默认数据源中的数据库。
-```sql
-Can't drop database 'tttt'; database doesn't exist
-```
+
 
 
 ## 遗留问题：
