@@ -3,10 +3,12 @@ package com.indestructible_backend.service.impl;
 import com.indestructible_backend.domain.NewDbInfo;
 import com.indestructible_backend.mapper.DatabaseDao;
 import com.indestructible_backend.service.DatabaseService;
+import com.indestructible_backend.utils.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.*;
 
 /**
  * @Author Sbaby
@@ -39,5 +41,20 @@ public class DatabaseServiceImpl implements DatabaseService {
     @Override
     public void dropTable(String dbName, String tbName) {
         databaseDao.dropTable(dbName, tbName);
+    }
+
+    @Override
+    public File exportDatabase(String dbName, String fileName) throws Exception {
+        if(!"".equals(fileName)) {
+            StringBuffer content = new StringBuffer();
+            content.append("DROP TABLE IF EXISTS `testTable`;").append("\r\n");
+            content.append("CREATE TABLE `testTable`(").append("\r\n");
+            content.append("`testColumn` varchar(255) NOT NULL,").append("\r\n");
+            content.append(") ENGINE=InnoDB DEFAULT CHARSET=latin1;").append("\r\n");
+            File file = FileUtil.createAndWriteSQLFile(fileName, content);
+            return file;
+        } else {
+            throw new RuntimeException("fileName can not be null!");
+        }
     }
 }

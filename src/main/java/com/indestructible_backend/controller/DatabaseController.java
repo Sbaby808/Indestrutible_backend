@@ -10,6 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+
 /**
  * @Author Sbaby
  * @Date 2020/03/18 0:59
@@ -67,6 +73,22 @@ public class DatabaseController {
                 return new Response().success();
             } catch (Exception e) {
                 LOGGER.error("drop table failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
+    @GetMapping("/export_db")
+    public Response exportDatabase(String dbName, String fileName, String dataSource, HttpServletResponse response) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                File file = databaseService.exportDatabase(dbName, fileName);
+                return new Response().success(file);
+            } catch (Exception e) {
+                LOGGER.error("export database failed!", e);
                 return new Response().failure(e.getCause().getMessage());
             }
         }

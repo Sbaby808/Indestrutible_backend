@@ -2,6 +2,8 @@ package com.indestructible_backend.service;
 
 import com.indestructible_backend.domain.NewDbInfo;
 
+import java.io.File;
+
 /**
  * @Author Sbaby
  * @Date 2020/03/18 1:04
@@ -23,5 +25,10 @@ public interface DatabaseService {
      * 删除数据表
      */
     public void dropTable(String dbName, String tbName);
+
+    /**
+     * 导出数据库
+     */
+    public File exportDatabase(String dbName, String fileName) throws Exception;
 
 }

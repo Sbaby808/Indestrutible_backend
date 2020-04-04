@@ -1,8 +1,8 @@
 package com.indestructible_backend.mapper;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
@@ -27,6 +27,9 @@ public interface DatabaseDao {
 
     @Update("DROP TABLE ${dbName}.${tbName}")
     void dropTable(@Param("dbName") String dbName, @Param("tbName") String tbName);
+
+    @Select("")
+    String exportDatabase(@Param("dbName") String dbName);
 
 
 }
