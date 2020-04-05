@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class DatabaseServiceImpl implements DatabaseService {
                         .append("\r\n").append("\r\n");
                 content.append("CREATE TABLE `").append(tableAttribute.getTABLE_NAME()).append("` (")
                         .append("\r\n");
-                String primary_key = "";
+                List<String> primary_keys = new ArrayList<>();
                 for(TableStructure tableStructure : structures) {
                     // 添加字段信息
                     content.append("`").append(tableStructure.getField()).append("` ")
@@ -69,11 +70,21 @@ public class DatabaseServiceImpl implements DatabaseService {
                             .append(tableStructure.getNull().equals("NO") ? "NOT NULL " : "")
                     .append(",").append("\r\n");
                     if("PRI".equals(tableStructure.getKey())) {
-                        primary_key = tableStructure.getField();
+                        primary_keys.add(tableStructure.getField());
                     }
                 }
-                content.append("PRIMARY KEY (`").append(primary_key).append("`)")
-                        .append("\r\n");
+                // 设置主键
+                if(primary_keys.size() > 0) {
+                    content.append("PRIMARY KEY (");
+                    for(String primary_key : primary_keys) {
+                        content.append("`").append(primary_key).append("`,");
+                    }
+                    content.deleteCharAt(content.length() - 1).append(")");
+                    if(primary_keys.size() > 1) {
+                        content.append(" USING BTREE");
+                    }
+                    content.append("\r\n");
+                }
                 content.append(") ENGINE=").append(tableAttribute.getENGINE()).append(" DEFAULT CHARSET=")
                         .append(tableAttribute.getTABLE_COLLATION().split("_")[0]).append(";")
                         .append("\r\n").append("\r\n");
@@ -87,11 +98,14 @@ public class DatabaseServiceImpl implements DatabaseService {
                     for(Map<String, String> map : data) {
                         content.append("(");
                         for(TableStructure tableStructure : structures) {
-                            content.append(String.valueOf(map.get(tableStructure.getField()))).append(",");
+                            if(tableStructure.getType().startsWith("char") || tableStructure.getType().startsWith("varchar")) {
+                                content.append("'").append(String.valueOf(map.get(tableStructure.getField()))).append("',");
+                            } else {
+                                content.append(String.valueOf(map.get(tableStructure.getField()))).append(",");
+                            }
                         }
                         // 删除最后一个逗号
-                        content.deleteCharAt(content.length() - 1);
-                        content.append("),");
+                        content.deleteCharAt(content.length() - 1).append("),");
                     }
                     content.deleteCharAt(content.length() - 1).append(";").append("\r\n");
                 }
