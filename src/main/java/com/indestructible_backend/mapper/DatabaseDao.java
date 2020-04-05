@@ -1,9 +1,14 @@
 package com.indestructible_backend.mapper;
 
+import com.indestructible_backend.domain.TableAttribute;
+import com.indestructible_backend.domain.TableStructure;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Sbaby
@@ -28,8 +33,16 @@ public interface DatabaseDao {
     @Update("DROP TABLE ${dbName}.${tbName}")
     void dropTable(@Param("dbName") String dbName, @Param("tbName") String tbName);
 
-    @Select("")
-    String exportDatabase(@Param("dbName") String dbName);
+    @Select("SELECT TABLE_SCHEMA,TABLE_NAME,ENGINE,TABLE_COLLATION FROM TABLES WHERE TABLE_SCHEMA = #{dbName}")
+    List<TableAttribute> tableList(@Param("dbName") String dbName);
 
+    @Update("USE ${dbName}")
+    void useDatabase(@Param("dbName") String dbName);
+
+    @Select("DESC ${tbName}")
+    List<TableStructure> tableStructures(@Param("tbName") String tbName);
+
+    @Select("SELECT * FROM ${tbName}")
+    List<Map<String, String>> tableData(@Param("tbName") String tbName);
 
 }

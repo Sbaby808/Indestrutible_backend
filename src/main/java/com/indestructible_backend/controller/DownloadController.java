@@ -1,15 +1,22 @@
 package com.indestructible_backend.controller;
 
+import com.indestructible_backend.DataSourceHelper.DataSourceContextHolder;
+import com.indestructible_backend.domain.Response;
+import com.indestructible_backend.domain.TableStructure;
+import com.indestructible_backend.mapper.DatabaseDao;
+import com.indestructible_backend.utils.DataSourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @Author Sbaby
@@ -18,6 +25,9 @@ import java.io.OutputStream;
  */
 @RestController
 public class DownloadController {
+
+    @Resource
+    DatabaseDao databaseDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DownloadController.class);
 
@@ -57,6 +67,23 @@ public class DownloadController {
         } catch (Exception e) {
             LOGGER.error("download file error!", e);
             e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/tables")
+    public Response test(String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                databaseDao.useDatabase("test");
+                List<TableStructure> list = databaseDao.tableStructures("testTable");
+                return new Response().success(list);
+            } catch (Exception e) {
+                LOGGER.error("export database failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
         }
     }
 
