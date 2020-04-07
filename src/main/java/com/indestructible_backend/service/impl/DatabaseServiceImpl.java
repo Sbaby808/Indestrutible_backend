@@ -3,6 +3,7 @@ package com.indestructible_backend.service.impl;
 import com.indestructible_backend.domain.NewDbInfo;
 import com.indestructible_backend.domain.TableAttribute;
 import com.indestructible_backend.domain.TableStructure;
+import com.indestructible_backend.domain.vo.TableStructureVo;
 import com.indestructible_backend.mapper.DatabaseDao;
 import com.indestructible_backend.service.DatabaseService;
 import com.indestructible_backend.utils.FileUtil;
@@ -116,5 +117,45 @@ public class DatabaseServiceImpl implements DatabaseService {
         } else {
             throw new RuntimeException("fileName can not be null!");
         }
+    }
+
+    @Override
+    public List<TableStructureVo> tableStructure(String dbName, String tbName) {
+        databaseDao.useDatabase(dbName);
+        List<TableStructure> tableStructures = databaseDao.tableStructures(tbName);
+        List<TableStructureVo> tableStructureVos = new ArrayList<>();
+        for (TableStructure tableStructure : tableStructures) {
+            tableStructureVos.add(new TableStructureVo(tableStructure));
+        }
+        return tableStructureVos;
+    }
+
+    @Override
+    public List<TableStructureVo> dropColumn(String dbName, String tbName, String columnName) {
+        databaseDao.useDatabase(dbName);
+        databaseDao.dropColumn(tbName, columnName);
+        return tableStructure(dbName, tbName);
+    }
+
+    @Override
+    public List<TableStructureVo> addColumn(String dbName, String tbName, TableStructureVo tableStructureVo) {
+        databaseDao.useDatabase(dbName);
+        List<TableStructureVo> tableStructureVos = tableStructure(dbName, tbName);
+        StringBuffer keys = new StringBuffer();
+        for(TableStructureVo tableStructureVo_ : tableStructureVos) {
+            if(tableStructureVo_.isKey()) {
+                keys.append(tableStructureVo_.getField()).append(",");
+            }
+        }
+        if(tableStructureVo.isKey()) {
+            keys.append(tableStructureVo.getField());
+            databaseDao.addColumnWithKey(tbName, tableStructureVo.getField(), tableStructureVo.getType(),
+                    tableStructureVo.getSize(), tableStructureVo.isNotnull() ? "NOT NULL" : "", keys.toString());
+        } else {
+            databaseDao.addColumnWithoutKey(tbName, tableStructureVo.getField(), tableStructureVo.getType(),
+                    tableStructureVo.getSize(), tableStructureVo.isNotnull() ? "NOT NULL" : "");
+        }
+        List<TableStructureVo> list = tableStructure(dbName, tbName);
+        return list;
     }
 }

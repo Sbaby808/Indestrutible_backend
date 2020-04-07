@@ -1,8 +1,10 @@
 package com.indestructible_backend.service;
 
 import com.indestructible_backend.domain.NewDbInfo;
+import com.indestructible_backend.domain.vo.TableStructureVo;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @Author Sbaby
@@ -30,5 +32,17 @@ public interface DatabaseService {
      * 导出数据库
      */
     public File exportDatabase(String dbName, String fileName) throws Exception;
+
+    /**
+     * 获取表结构信息
+     */
+    public List<TableStructureVo> tableStructure(String dbName, String tbName);
+
+    /**
+     * 删除列
+     */
+    public List<TableStructureVo> dropColumn(String dbName, String tbName, String columnName);
+
+    public List<TableStructureVo> addColumn(String dbName, String tbName, TableStructureVo tableStructureVo);
 
 }

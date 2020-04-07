@@ -1,8 +1,11 @@
 package com.indestructible_backend.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.indestructible_backend.DataSourceHelper.DataSourceContextHolder;
 import com.indestructible_backend.domain.NewDbInfo;
 import com.indestructible_backend.domain.Response;
+import com.indestructible_backend.domain.vo.TableStructureVo;
 import com.indestructible_backend.service.DatabaseService;
 import com.indestructible_backend.utils.DataSourceUtil;
 import org.slf4j.Logger;
@@ -10,11 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Sbaby
@@ -79,7 +80,7 @@ public class DatabaseController {
     }
 
     @GetMapping("/export_db")
-    public Response exportDatabase(String dbName, String fileName, String dataSource, HttpServletResponse response) {
+    public Response exportDatabase(String dbName, String fileName, String dataSource) {
         if(!DataSourceUtil.checkDataSource(dataSource)) {
             return new Response().failure("error dataSource!");
         } else {
@@ -89,6 +90,58 @@ public class DatabaseController {
                 return new Response().success(file);
             } catch (Exception e) {
                 LOGGER.error("export database failed!", e);
+                return new Response().failure(e.getMessage());
+            }
+        }
+    }
+
+    @GetMapping("/table_structure")
+    public Response tableStructure(String dbName, String tbName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                List<TableStructureVo> list = databaseService.tableStructure(dbName, tbName);
+                return new Response().success(list);
+            } catch (Exception e) {
+                LOGGER.error("get table structure failed!", e);
+                return new Response().failure(e.getMessage());
+            }
+        }
+    }
+
+    @DeleteMapping("/drop_column")
+    public Response dropColumn(String dbName, String tbName, String columnName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                List<TableStructureVo> list =  databaseService.dropColumn(dbName, tbName, columnName);
+                return new Response().success(list);
+            } catch (Exception e) {
+                LOGGER.error("drop table column failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
+    @PostMapping("/add_column")
+    public Response addColumn(@RequestBody Map<String, String> map) {
+        TableStructureVo tableStructureVo = JSONObject.parseObject(map.get("tableStructureVo"), TableStructureVo.class);
+        String dbName = map.get("dbName");
+        String tbName = map.get("tbName");
+        String dataSource = map.get("dataSource");
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                List<TableStructureVo> list = databaseService.addColumn(dbName, tbName, tableStructureVo);
+                return new Response().success(list);
+            } catch (Exception e) {
+                LOGGER.error("add table column failed!", e);
                 return new Response().failure(e.getCause().getMessage());
             }
         }
