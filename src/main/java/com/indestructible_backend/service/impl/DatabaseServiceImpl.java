@@ -140,20 +140,69 @@ public class DatabaseServiceImpl implements DatabaseService {
     @Override
     public List<TableStructureVo> addColumn(String dbName, String tbName, TableStructureVo tableStructureVo) {
         databaseDao.useDatabase(dbName);
-        List<TableStructureVo> tableStructureVos = tableStructure(dbName, tbName);
-        StringBuffer keys = new StringBuffer();
-        for(TableStructureVo tableStructureVo_ : tableStructureVos) {
-            if(tableStructureVo_.isKey()) {
-                keys.append(tableStructureVo_.getField()).append(",");
-            }
-        }
         if(tableStructureVo.isKey()) {
+            List<TableStructureVo> tableStructureVos = tableStructure(dbName, tbName);
+            StringBuffer keys = new StringBuffer();
+            for(TableStructureVo tableStructureVo_ : tableStructureVos) {
+                if(tableStructureVo_.isKey()) {
+                    keys.append(tableStructureVo_.getField()).append(",");
+                }
+            }
             keys.append(tableStructureVo.getField());
             databaseDao.addColumnWithKey(tbName, tableStructureVo.getField(), tableStructureVo.getType(),
                     tableStructureVo.getSize(), tableStructureVo.isNotnull() ? "NOT NULL" : "", keys.toString());
         } else {
             databaseDao.addColumnWithoutKey(tbName, tableStructureVo.getField(), tableStructureVo.getType(),
                     tableStructureVo.getSize(), tableStructureVo.isNotnull() ? "NOT NULL" : "");
+        }
+        List<TableStructureVo> list = tableStructure(dbName, tbName);
+        return list;
+    }
+
+    @Override
+    public List<TableStructureVo> modifyColumn(String dbName, String tbName, TableStructureVo oldTableStructureVo, TableStructureVo newTableStructureVo) {
+        databaseDao.useDatabase(dbName);
+        if(oldTableStructureVo.getField().equals(newTableStructureVo.getField())
+                && oldTableStructureVo.isKey() == newTableStructureVo.isKey()) {
+            // 不需要修改主键
+            databaseDao.modifyColumnWithoutKeyAndField(
+                    tbName, newTableStructureVo.getField(), newTableStructureVo.getType(),
+                    newTableStructureVo.getSize(), newTableStructureVo.isNotnull() ? "NOT NULL" : "NULL");
+        } else {
+            List<TableStructureVo> tableStructureVos = tableStructure(dbName, tbName);
+            StringBuffer keys = new StringBuffer();
+            // 需要修改主键
+            if(!oldTableStructureVo.getField().equals(newTableStructureVo.getField())) {
+                // 需要修改字段名
+                for(TableStructureVo tableStructureVo_ : tableStructureVos) {
+                    if(tableStructureVo_.isKey() && !tableStructureVo_.getField().equals(oldTableStructureVo.getField())) {
+                        keys.append(tableStructureVo_.getField()).append(",");
+                    }
+                }
+                if(newTableStructureVo.isKey()) {
+                    keys.append(newTableStructureVo.getField());
+                }
+                databaseDao.modifyColumnWithKeyAndField(tbName, oldTableStructureVo.getField(), newTableStructureVo.getField(), newTableStructureVo.getType(),
+                        newTableStructureVo.getSize(), newTableStructureVo.isNotnull() ? "NOT NULL" : "NULL", keys.toString());
+            } else {
+                // 不需要修改字段名
+                for(TableStructureVo tableStructureVo_ : tableStructureVos) {
+                    if(tableStructureVo_.isKey()) {
+                        if(tableStructureVo_.getField().equals(newTableStructureVo.getField()) && !newTableStructureVo.isKey()) {
+                            // 取消key
+                            break;
+                        }
+                        keys.append(tableStructureVo_.getField()).append(",");
+                    }
+                }
+                // 设置为key
+                if(!oldTableStructureVo.isKey() && newTableStructureVo.isKey()) {
+                    keys.append(newTableStructureVo.getField()).append(",");
+                }
+                keys.deleteCharAt(keys.length() - 1);
+                databaseDao.modifyColumnWithKey(tbName, newTableStructureVo.getField(), newTableStructureVo.getType(),
+                        newTableStructureVo.getSize(), newTableStructureVo.isNotnull() ? "NOT NULL" : "NULL", keys.toString());
+            }
         }
         List<TableStructureVo> list = tableStructure(dbName, tbName);
         return list;

@@ -43,6 +43,14 @@ public interface DatabaseService {
      */
     public List<TableStructureVo> dropColumn(String dbName, String tbName, String columnName);
 
+    /**
+     * 添加列
+     */
     public List<TableStructureVo> addColumn(String dbName, String tbName, TableStructureVo tableStructureVo);
 
+    /**
+     * 修改列
+     */
+    public List<TableStructureVo> modifyColumn(String dbName, String tbName,
+                                               TableStructureVo oldTableStructureVo, TableStructureVo newTableStructureVo);
 }

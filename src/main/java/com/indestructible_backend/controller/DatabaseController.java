@@ -147,4 +147,25 @@ public class DatabaseController {
         }
     }
 
+    @PostMapping("/modify_column")
+    public Response modifyColumn(@RequestBody Map<String, String> map) {
+        TableStructureVo oldTableStructureVo = JSONObject.parseObject(map.get("oldTableStructureVo"), TableStructureVo.class);
+        TableStructureVo newTableStructureVo = JSONObject.parseObject(map.get("newTableStructureVo"), TableStructureVo.class);
+        String dbName = map.get("dbName");
+        String tbName = map.get("tbName");
+        String dataSource = map.get("dataSource");
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                List<TableStructureVo> list = databaseService.modifyColumn(dbName, tbName, oldTableStructureVo, newTableStructureVo);
+                return new Response().success(list);
+            } catch (Exception e) {
+                LOGGER.error("modify table column failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
 }

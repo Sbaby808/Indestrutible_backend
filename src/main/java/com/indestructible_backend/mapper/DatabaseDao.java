@@ -61,4 +61,23 @@ public interface DatabaseDao {
     void addColumnWithKey(@Param("tbName") String tbName, @Param("field") String field, @Param("type") String type,
                              @Param("size") int size, @Param("notnull") String notnull, @Param("keys") String keys);
 
+    @Update("ALTER TABLE ${tbName} " +
+            "MODIFY COLUMN ${field} ${type}(${size}) ${notnull}")
+    void modifyColumnWithoutKeyAndField(@Param("tbName") String tbName, @Param("field") String field, @Param("type") String type,
+                                @Param("size") int size, @Param("notnull") String notnull);
+
+    @Update("ALTER TABLE ${tbName} " +
+            "MODIFY COLUMN ${field} ${type}(${size}) ${notnull}," +
+            "DROP PRIMARY KEY," +
+            "ADD PRIMARY KEY (${keys}) USING BTREE")
+    void modifyColumnWithKey(@Param("tbName") String tbName, @Param("field") String field, @Param("type") String type,
+                          @Param("size") int size, @Param("notnull") String notnull, @Param("keys") String keys);
+
+    @Update("ALTER TABLE ${tbName} " +
+            "CHANGE COLUMN  ${oldField} ${newField} ${type}(${size}) ${notnull}," +
+            "DROP PRIMARY KEY," +
+            "ADD PRIMARY KEY (${keys}) USING BTREE")
+    void modifyColumnWithKeyAndField(@Param("tbName") String tbName, @Param("oldField") String oldField,
+                                     @Param("newField") String newField, @Param("type") String type,
+                                     @Param("size") int size, @Param("notnull") String notnull, @Param("keys") String keys);
 }
