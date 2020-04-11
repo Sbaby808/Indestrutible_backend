@@ -80,4 +80,17 @@ public interface DatabaseDao {
     void modifyColumnWithKeyAndField(@Param("tbName") String tbName, @Param("oldField") String oldField,
                                      @Param("newField") String newField, @Param("type") String type,
                                      @Param("size") int size, @Param("notnull") String notnull, @Param("keys") String keys);
+
+    @Select("SELECT * FROM ${tbName}")
+    List<Map<String, String>> showTableData(@Param("tbName") String tbName);
+
+    @Select("SELECT COUNT(0) FROM ${tbName}")
+    int countRows(@Param("tbName") String tbName);
+
+    @Select("SELECT COLUMN_NAME " +
+            "FROM INFORMATION_SCHEMA.COLUMNS " +
+            "WHERE TABLE_NAME = #{tbName} " +
+            "AND TABLE_SCHEMA = #{dbName}")
+    List<String> columnNames(String dbName, String tbName);
+
 }

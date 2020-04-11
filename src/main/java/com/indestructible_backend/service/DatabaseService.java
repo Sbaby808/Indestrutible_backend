@@ -5,6 +5,7 @@ import com.indestructible_backend.domain.vo.TableStructureVo;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Sbaby
@@ -53,4 +54,8 @@ public interface DatabaseService {
      */
     public List<TableStructureVo> modifyColumn(String dbName, String tbName,
                                                TableStructureVo oldTableStructureVo, TableStructureVo newTableStructureVo);
+    /**
+     * 查看表数据
+     */
+    public Map<String, Object> showTableData(String dbName, String tbName, int pageNum, int pageSize, String ordField, boolean sort);
 }

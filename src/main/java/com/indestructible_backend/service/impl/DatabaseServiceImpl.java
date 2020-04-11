@@ -1,5 +1,6 @@
 package com.indestructible_backend.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.indestructible_backend.domain.NewDbInfo;
 import com.indestructible_backend.domain.TableAttribute;
 import com.indestructible_backend.domain.TableStructure;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -206,5 +208,24 @@ public class DatabaseServiceImpl implements DatabaseService {
         }
         List<TableStructureVo> list = tableStructure(dbName, tbName);
         return list;
+    }
+
+    @Override
+    public Map<String, Object> showTableData(String dbName, String tbName, int pageNum, int pageSize, String ordField, boolean sort) {
+        databaseDao.useDatabase(dbName);
+        int count = databaseDao.countRows(tbName);
+        if(!"".equals(ordField)) {
+            String orderBy = ordField + (sort ? " desc" : " asc");
+            PageHelper.startPage(pageNum, pageSize, ordField + orderBy);
+        } else {
+         PageHelper.startPage(pageNum, pageSize);
+        }
+        List<Map<String, String>> data = databaseDao.showTableData(tbName);
+        List<String> columns = databaseDao.columnNames(dbName, tbName);
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", data);
+        result.put("columns", columns);
+        result.put("total", count);
+        return result;
     }
 }

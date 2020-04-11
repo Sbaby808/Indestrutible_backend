@@ -168,4 +168,23 @@ public class DatabaseController {
         }
     }
 
+    @GetMapping("/show_table_data")
+    public Response showTableData(String dbName, String tbName,
+                                  int pageNum, int pageSize,
+                                  String ordField, boolean sort, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                Map<String, Object> map = databaseService.showTableData(dbName, tbName,
+                        pageNum, pageSize, ordField, sort);
+                return new Response().success(map);
+            } catch (Exception e) {
+                LOGGER.error("modify table column failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
 }
