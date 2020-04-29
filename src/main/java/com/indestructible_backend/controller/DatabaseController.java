@@ -225,4 +225,21 @@ public class DatabaseController {
             }
         }
     }
+
+    @GetMapping("/export_table")
+    public Response exportTable(String dbName, String tbName, String fileName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                File file = databaseService.exportTable(dbName, tbName, fileName);
+                return new Response().success(file);
+            } catch (Exception e) {
+                LOGGER.error("export table failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
 }

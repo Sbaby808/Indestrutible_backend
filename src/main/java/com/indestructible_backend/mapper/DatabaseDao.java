@@ -108,4 +108,8 @@ public interface DatabaseDao {
     @Update("ALTER DATABASE ${dbName} CHARACTER SET #{charset} COLLATE #{collation}")
     void updateCharsetAndCollation(@Param("dbName") String dbName, @Param("charset") String charset,
                                    @Param("collation") String collation);
+
+    @Select("SELECT ENGINE,TABLE_COLLATION FROM information_schema.TABLES" +
+            " WHERE table_schema = #{dbName} AND table_name = #{tbName}")
+    List<Map<String, String>> getTableEngineAndCollation(String dbName, String tbName);
 }

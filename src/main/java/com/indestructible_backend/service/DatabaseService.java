@@ -70,4 +70,9 @@ public interface DatabaseService {
     public void updateDatabseCharsetAndCollation(String dbName, String newCharset,
                                                  String oldCharset, String newCollation,
                                                  String oldCollation);
+
+    /**
+     * 导出表
+     */
+    public File exportTable(String dbName, String tbName, String fileName) throws Exception;
 }

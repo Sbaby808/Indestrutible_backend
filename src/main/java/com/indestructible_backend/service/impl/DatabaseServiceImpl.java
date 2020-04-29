@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author Sbaby
@@ -253,6 +250,75 @@ public class DatabaseServiceImpl implements DatabaseService {
                 // ALTER DATABASE `store` CHARACTER SET 'big5' COLLATE 'big5_chinese_ci';
                 databaseDao.updateCharsetAndCollation(dbName, newCharset, newCollation);
             }
+        }
+    }
+
+    @Override
+    public File exportTable(String dbName, String tbName, String fileName) throws Exception {
+        if(!"".equals(fileName)) {
+            StringBuffer content = new StringBuffer();
+            databaseDao.useDatabase(dbName);
+            List<Map<String, String>> lms = databaseDao.getTableEngineAndCollation(dbName, tbName);
+            String engine = lms.get(0).get("ENGINE");
+            String collation = lms.get(0).get("TABLE_COLLATION");
+            // 获取表结构
+            List<TableStructure> structures = databaseDao.tableStructures(tbName);
+            content.append("DROP TABLE IF EXISTS `").append(tbName).append("`;")
+                    .append("\r\n").append("\r\n");
+            content.append("CREATE TABLE `").append(tbName).append("` (")
+                    .append("\r\n");
+            List<String> primary_keys = new ArrayList<>();
+            for(TableStructure tableStructure : structures) {
+                // 添加字段信息
+                content.append("`").append(tableStructure.getField()).append("` ")
+                        .append(tableStructure.getType()).append(" ")
+                        .append(tableStructure.getNull().equals("NO") ? "NOT NULL " : "")
+                        .append(",").append("\r\n");
+                if("PRI".equals(tableStructure.getKey())) {
+                    primary_keys.add(tableStructure.getField());
+                }
+            }
+            // 设置主键
+            if(primary_keys.size() > 0) {
+                content.append("PRIMARY KEY (");
+                for(String primary_key : primary_keys) {
+                    content.append("`").append(primary_key).append("`,");
+                }
+                content.deleteCharAt(content.length() - 1).append(")");
+                if(primary_keys.size() > 1) {
+                    content.append(" USING BTREE");
+                }
+                content.append("\r\n");
+            }
+            content.append(") ENGINE=").append(engine).append(" DEFAULT CHARSET=")
+                    .append(collation.split("_")[0]).append(";")
+                    .append("\r\n").append("\r\n");
+            content.append("LOCK TABLES `").append(tbName).append("` WRITE;")
+                    .append("\r\n");
+            // 获取表数据
+            List<Map<String, String>> data = databaseDao.tableData(tbName);
+            if(data.size() > 0) {
+                // 插入数据
+                content.append("INSERT INTO `").append(tbName).append("` values ");
+                for(Map<String, String> map : data) {
+                    content.append("(");
+                    for(TableStructure tableStructure : structures) {
+                        if(tableStructure.getType().startsWith("char") || tableStructure.getType().startsWith("varchar")) {
+                            content.append("'").append(String.valueOf(map.get(tableStructure.getField()))).append("',");
+                        } else {
+                            content.append(String.valueOf(map.get(tableStructure.getField()))).append(",");
+                        }
+                    }
+                    // 删除最后一个逗号
+                    content.deleteCharAt(content.length() - 1).append("),");
+                }
+                content.deleteCharAt(content.length() - 1).append(";").append("\r\n");
+            }
+            content.append("UNLOCK TABLES;").append("\r\n").append("\r\n");
+            File file = FileUtil.createAndWriteSQLFile(fileName, content);
+            return file;
+        } else {
+            throw new RuntimeException("fileName can not be null!");
         }
     }
 }
