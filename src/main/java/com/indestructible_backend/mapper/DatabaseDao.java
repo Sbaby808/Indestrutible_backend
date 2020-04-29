@@ -93,4 +93,19 @@ public interface DatabaseDao {
             "AND TABLE_SCHEMA = #{dbName}")
     List<String> columnNames(String dbName, String tbName);
 
+    @Select("SHOW VARIABLES LIKE 'character_set_database'")
+    List<Map<String, String>> getDatabaseCharset();
+
+    @Select("SHOW VARIABLES LIKE 'collation_database'")
+    List<Map<String, String>> getDatabaseCollation();
+
+    @Update("ALTER DATABASE ${dbName} COLLATE #{collation}")
+    void updateCollation(@Param("dbName") String dbName, @Param("collation") String collation);
+
+    @Update("ALTER DATABASE ${dbName} CHARACTER SET #{charset}")
+    void updateCharset(@Param("dbName") String dbName, @Param("charset") String charset);
+
+    @Update("ALTER DATABASE ${dbName} CHARACTER SET #{charset} COLLATE #{collation}")
+    void updateCharsetAndCollation(@Param("dbName") String dbName, @Param("charset") String charset,
+                                   @Param("collation") String collation);
 }

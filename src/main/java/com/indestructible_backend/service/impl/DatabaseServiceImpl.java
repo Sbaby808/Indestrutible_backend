@@ -228,4 +228,31 @@ public class DatabaseServiceImpl implements DatabaseService {
         result.put("total", count);
         return result;
     }
+
+    @Override
+    public Map<String, String> getDatabaseCharsetAndCollation(String dbName) {
+        databaseDao.useDatabase(dbName);
+        Map<String, String> map = new HashMap<>();
+        map.put("charset", databaseDao.getDatabaseCharset().get(0).get("Value"));
+        map.put("collation", databaseDao.getDatabaseCollation().get(0).get("Value"));
+        return map;
+    }
+
+    @Override
+    public void updateDatabseCharsetAndCollation(String dbName, String newCharset, String oldCharset, String newCollation, String oldCollation) {
+        databaseDao.useDatabase(dbName);
+        if(!" ".equals(newCharset)) {
+            if(newCharset.equals(oldCharset) && !newCollation.equals(oldCollation)
+             && !" ".equals(newCollation)) {
+                // ALTER DATABASE `store` COLLATE 'utf8_esperanto_ci';
+                databaseDao.updateCollation(dbName, newCollation);
+            } else if(!newCharset.equals(oldCharset) && " ".equals(newCollation)) {
+                // ALTER DATABASE `store` CHARACTER SET 'big5';
+                databaseDao.updateCharset(dbName, newCharset);
+            } else if(!newCharset.equals(oldCharset)) {
+                // ALTER DATABASE `store` CHARACTER SET 'big5' COLLATE 'big5_chinese_ci';
+                databaseDao.updateCharsetAndCollation(dbName, newCharset, newCollation);
+            }
+        }
+    }
 }

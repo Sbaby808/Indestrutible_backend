@@ -58,4 +58,16 @@ public interface DatabaseService {
      * 查看表数据
      */
     public Map<String, Object> showTableData(String dbName, String tbName, int pageNum, int pageSize, String ordField, boolean sort);
+
+    /**
+     * 查询数据库编码和排序规则
+     */
+    public Map<String, String> getDatabaseCharsetAndCollation(String dbName);
+
+    /**
+     * 修改数据库编码和排序规则
+     */
+    public void updateDatabseCharsetAndCollation(String dbName, String newCharset,
+                                                 String oldCharset, String newCollation,
+                                                 String oldCollation);
 }

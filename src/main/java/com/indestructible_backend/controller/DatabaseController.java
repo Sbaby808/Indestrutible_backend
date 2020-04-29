@@ -187,4 +187,42 @@ public class DatabaseController {
         }
     }
 
+    @GetMapping("/get_database_charset_and_collation")
+    public Response getDatabaseCharsetAndCollation(String dbName, String dataSource) {
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                Map<String, String> map = databaseService.getDatabaseCharsetAndCollation(dbName);
+                return new Response().success(map);
+            } catch (Exception e) {
+                LOGGER.error("get database charset and collation failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
+    @PostMapping("/update_database_charset_and_collation")
+    public Response updateDatabaseCharsetAndCollation(@RequestBody Map<String, String> map) {
+        String dataSource = map.get("dataSource");
+        String dbName = map.get("dbName");
+        String newCharset = map.get("newCharset");
+        String oldCharset = map.get("oldCharset");
+        String newCollation = map.get("newCollation");
+        String oldCollation = map.get("oldCollation");
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                databaseService.updateDatabseCharsetAndCollation(dbName, newCharset, oldCharset,
+                        newCollation, oldCollation);
+                return new Response().success();
+            } catch (Exception e) {
+                LOGGER.error("update database charset and collation failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
 }
