@@ -112,4 +112,10 @@ public interface DatabaseDao {
     @Select("SELECT ENGINE,TABLE_COLLATION FROM information_schema.TABLES" +
             " WHERE table_schema = #{dbName} AND table_name = #{tbName}")
     List<Map<String, String>> getTableEngineAndCollation(String dbName, String tbName);
+
+    @Update("CREATE TABLE IF NOT EXISTS ${tbName} (" +
+            "${structures} " +
+            ")ENGINE=${engine} DEFAULT CHARSET=${charset}")
+    void newTable(@Param("tbName") String tbName, @Param("structures") String structures, @Param("engine") String engine,
+                  @Param("charset") String charset);
 }

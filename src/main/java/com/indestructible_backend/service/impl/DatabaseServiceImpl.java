@@ -321,4 +321,32 @@ public class DatabaseServiceImpl implements DatabaseService {
             throw new RuntimeException("fileName can not be null!");
         }
     }
+
+    @Override
+    public void newTable(String dbName, String tbName, String engine, String charset, List<TableStructureVo> list) {
+        databaseDao.useDatabase(dbName);
+        StringBuffer content = new StringBuffer();
+        List<String> primary_keys = new ArrayList<>();
+        for(TableStructureVo tableStructure : list) {
+            // 添加字段信息
+            content.append(tableStructure.getField()).append(" ")
+                    .append(tableStructure.getType()).append(" ")
+                    .append(tableStructure.isNotnull() ? "NOT NULL " : "")
+                    .append(",");
+            if(tableStructure.isKey()) {
+                primary_keys.add(tableStructure.getField());
+            }
+        }
+        // 设置主键
+        if(primary_keys.size() > 0) {
+            content.append("PRIMARY KEY (");
+            for(String primary_key : primary_keys) {
+                content.append(primary_key).append(",");
+            }
+            content.deleteCharAt(content.length() - 1).append("),");
+        }
+        // 删除最后一个逗号
+        content.deleteCharAt(content.length() - 1);
+        databaseDao.newTable(tbName, content.toString(), engine, charset);
+    }
 }

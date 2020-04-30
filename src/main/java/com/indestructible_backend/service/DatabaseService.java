@@ -75,4 +75,9 @@ public interface DatabaseService {
      * 导出表
      */
     public File exportTable(String dbName, String tbName, String fileName) throws Exception;
+
+    /**
+     * 创建表
+     */
+    public void newTable(String dbName, String tbName, String engine, String charset, List<TableStructureVo> list);
 }

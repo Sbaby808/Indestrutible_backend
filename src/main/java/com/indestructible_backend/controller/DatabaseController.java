@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -237,6 +238,32 @@ public class DatabaseController {
                 return new Response().success(file);
             } catch (Exception e) {
                 LOGGER.error("export table failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
+
+    @PostMapping("/new_table")
+    public Response newTable(@RequestBody Map<String, String> map) {
+        List<Object> list = JSONObject.parseObject(map.get("columns"), List.class);
+        List<TableStructureVo> columns = new ArrayList<>();
+        for(Object obj : list) {
+            columns.add(JSONObject.parseObject(obj.toString() ,TableStructureVo.class));
+        }
+        String tbName = map.get("tbName");
+        String dbName = map.get("dbName");
+        String engine = map.get("engine");
+        String charset = map.get("charset");
+        String dataSource = map.get("dataSource");
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                databaseService.newTable(dbName, tbName, engine, charset, columns);
+                return new Response().success();
+            } catch (Exception e) {
+                LOGGER.error("create table failed!", e);
                 return new Response().failure(e.getCause().getMessage());
             }
         }
