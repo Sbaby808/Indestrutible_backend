@@ -349,4 +349,25 @@ public class DatabaseServiceImpl implements DatabaseService {
         content.deleteCharAt(content.length() - 1);
         databaseDao.newTable(tbName, content.toString(), engine, charset);
     }
+
+    @Override
+    public Map<String, Object> executeSqls(String[] sqls) {
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        for(String sql : sqls) {
+            String ssql = sql.trim();
+            if(!ssql.toUpperCase().startsWith("SELECT")) {
+                databaseDao.executeUpdateSql(ssql);
+            } else {
+                data = databaseDao.executeSelectSql(ssql);
+            }
+        }
+        if(data.size() > 0) {
+            result.put("data", data);
+            Set<String> columns = data.get(0).keySet();
+            result.put("columns", columns);
+            result.put("total", data.size());
+        }
+        return result;
+    }
 }

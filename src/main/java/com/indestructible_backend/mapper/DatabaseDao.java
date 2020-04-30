@@ -118,4 +118,10 @@ public interface DatabaseDao {
             ")ENGINE=${engine} DEFAULT CHARSET=${charset}")
     void newTable(@Param("tbName") String tbName, @Param("structures") String structures, @Param("engine") String engine,
                   @Param("charset") String charset);
+
+    @Update("${sql}")
+    void executeUpdateSql(@Param("sql") String sql);
+
+    @Select("${sql}")
+    List<Map<String, String>> executeSelectSql(@Param("sql") String sql);
 }

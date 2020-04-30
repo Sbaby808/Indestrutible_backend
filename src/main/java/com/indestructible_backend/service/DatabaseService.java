@@ -80,4 +80,9 @@ public interface DatabaseService {
      * 创建表
      */
     public void newTable(String dbName, String tbName, String engine, String charset, List<TableStructureVo> list);
+
+    /**
+     * 执行SQL脚本
+     */
+    public Map<String, Object> executeSqls(String[] sqls);
 }

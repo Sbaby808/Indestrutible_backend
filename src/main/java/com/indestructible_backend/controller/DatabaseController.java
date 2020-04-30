@@ -8,6 +8,7 @@ import com.indestructible_backend.domain.Response;
 import com.indestructible_backend.domain.vo.TableStructureVo;
 import com.indestructible_backend.service.DatabaseService;
 import com.indestructible_backend.utils.DataSourceUtil;
+import com.indestructible_backend.utils.SQLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,4 +270,26 @@ public class DatabaseController {
         }
     }
 
+    @PostMapping("/execute_sql")
+    public Response executeSQL(@RequestBody Map<String, String> map) {
+        String dataSource = map.get("dataSource");
+        String sqlScript = map.get("sqlScript");
+        if(!DataSourceUtil.checkDataSource(dataSource)) {
+            return new Response().failure("error dataSource!");
+        } else {
+            DataSourceContextHolder.setDataSource(dataSource);
+            try {
+                String[] sqls = SQLUtils.splitSqlScript(sqlScript);
+                if(sqls.length < 1) {
+                    return new Response().failure("无可执行语句！");
+                } else {
+                    Map<String, Object> result = databaseService.executeSqls(sqls);
+                    return new Response().success(result);
+                }
+            } catch (Exception e) {
+                LOGGER.error("execute SQL failed!", e);
+                return new Response().failure(e.getCause().getMessage());
+            }
+        }
+    }
 }
